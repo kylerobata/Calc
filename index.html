@@ -1,160 +1,284 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Time-Based Accounting Calculator</title>
+    <title>TrueBooks Accounting Bidding Calculator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* [Previous styles remain the same] */
-        .two-column-grid {
+        :root {
+            --primary-green: #10B981;
+            --dark-green: #059669;
+            --light-green: #D1FAE5;
+            --black: #1A1A1A;
+            --gray-800: #1F2937;
+            --gray-100: #F3F4F6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-100);
+            color: var(--black);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .calculator {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: var(--gray-800);
+            color: white;
+            padding: 24px;
+            text-align: center;
+            border-bottom: 4px solid var(--primary-green);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .rate-section {
+            background: var(--light-green);
+            padding: 20px;
+            margin: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--primary-green);
+        }
+
+        .content {
+            padding: 24px;
+        }
+
+        .two-columns {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 24px;
-        }
-        
-        .time-input {
-            background: #f8fafc;
-            padding: 16px;
-            border-radius: 8px;
-            margin-top: 8px;
+            margin-top: 20px;
         }
 
-        .calculated-time {
-            font-weight: 600;
-            color: #1e40af;
-            font-size: 16px;
-            margin-top: 8px;
+        .column {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
         }
 
-        .qb-options {
-            background: #f0f7ff;
-            padding: 16px;
-            border-radius: 8px;
-            margin-top: 16px;
-        }
-
-        .total-time {
-            background: #f0f9ff;
-            padding: 16px;
-            border-radius: 8px;
-            margin-top: 16px;
+        .column-header {
             font-size: 18px;
             font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--light-green);
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .total-hours {
+            background: var(--light-green);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            border: 1px solid var(--primary-green);
+        }
+
+        .total-hours-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark-green);
+            margin-top: 4px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-800);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .results {
+            background: var(--gray-800);
+            color: white;
+            padding: 24px;
+            margin-top: 24px;
+            border-radius: 8px;
+        }
+
+        .results-header {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 16px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            color: var(--black);
+        }
+
+        .result-label {
+            font-size: 14px;
+            color: var(--gray-800);
+            margin-bottom: 4px;
+        }
+
+        .result-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+
+        .warning {
+            background: #fef2f2;
+            border: 1px solid #fee2e2;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            color: #991b1b;
         }
     </style>
 </head>
 <body>
     <div class="calculator">
         <div class="header">
-            <h1>Time-Based Accounting Calculator</h1>
+            <h1>TrueBooks Accounting Bidding Calculator</h1>
         </div>
         
         <div class="content">
-            <div class="two-column-grid">
-                <!-- Left Column - Input Values -->
-                <div class="section">
-                    <div class="section-header">
-                        <h2 class="section-title">Service Requirements</h2>
-                    </div>
-                    <div class="input-group">
-                        <label for="bankAccounts">Bank Accounts</label>
-                        <input type="number" id="bankAccounts" placeholder="Enter number">
-                        
-                        <label for="creditCards">Credit Cards</label>
-                        <input type="number" id="creditCards" placeholder="Enter number">
-                        
-                        <label for="transactions">Average Monthly Transactions</label>
-                        <input type="number" id="transactions" placeholder="Enter number">
-                        
-                        <label for="transPerHour">Est. Cleared Transactions/hr</label>
-                        <input type="number" id="transPerHour" placeholder="Enter number">
-                        
-                        <label for="properties">Properties</label>
-                        <input type="number" id="properties" placeholder="Enter number">
-                        
-                        <label for="hasStripe">Stripe Integration</label>
-                        <select id="hasStripe">
-                            <option value="">Select...</option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
-                        </select>
-                        
-                        <label for="needsCategorization">Need Categorization</label>
-                        <select id="needsCategorization">
-                            <option value="">Select...</option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
-                        </select>
-                        
-                        <label for="monthlyAJEs">Average Monthly AJEs</label>
-                        <input type="number" id="monthlyAJEs" placeholder="Enter number">
-                        
-                        <label for="ajesPerHour">Estimate of AJEs per Hour</label>
-                        <input type="number" id="ajesPerHour" placeholder="Enter number">
-                    </div>
-                </div>
-
-                <!-- Right Column - Time Calculations -->
-                <div class="section">
-                    <div class="section-header">
-                        <h2 class="section-title">Time Calculations</h2>
-                    </div>
-                    <div class="time-input">
-                        <label for="transactionalHours">Est. Transactional/Rec Hours</label>
-                        <div id="transactionalHours" class="calculated-time">0.00</div>
-                        
-                        <label for="otherHours">Est. Other Hours</label>
-                        <input type="number" id="otherHours" placeholder="Enter hours">
-                        
-                        <div class="total-time">
-                            <label>Total Estimated Hours per Month</label>
-                            <div id="totalHours" class="calculated-time">0.00</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- QB Section -->
-            <div class="section qb-options">
-                <div class="section-header">
-                    <h2 class="section-title">QuickBooks Subscription</h2>
-                </div>
-                <div class="input-group">
-                    <label for="qbVersion">Select QB Version</label>
-                    <select id="qbVersion">
-                        <option value="">Select...</option>
-                        <option value="50">Essentials ($50)</option>
-                        <option value="70">Plus ($70)</option>
-                        <option value="140">Advanced ($140)</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Rate Settings -->
-            <div class="section">
-                <div class="section-header">
-                    <h2 class="section-title">Rate Settings</h2>
-                </div>
-                <div class="input-group">
+            <div class="rate-section">
+                <div class="input-row">
                     <label for="hourlyRate">Hourly Rate ($)</label>
-                    <input type="number" id="hourlyRate" placeholder="Enter rate">
+                    <input type="number" id="hourlyRate" placeholder="150" value="150">
                 </div>
             </div>
 
-            <!-- Results Section -->
+            <div class="two-columns">
+                <!-- Left Column - Service Items -->
+                <div class="column">
+                    <h2 class="column-header">Service Requirements</h2>
+                    <div class="input-row">
+                        <label>Bank Accounts</label>
+                        <input type="number" id="bankAccounts" placeholder="0">
+                    </div>
+                    <div class="input-row">
+                        <label>Credit Cards</label>
+                        <input type="number" id="creditCards" placeholder="0">
+                    </div>
+                    <div class="input-row">
+                        <label>Monthly Transactions</label>
+                        <input type="number" id="transactions" placeholder="0">
+                    </div>
+                    <div class="input-row">
+                        <label>Properties</label>
+                        <input type="number" id="properties" placeholder="0">
+                    </div>
+                    <div class="input-row">
+                        <label>Monthly AJEs</label>
+                        <input type="number" id="monthlyAJEs" placeholder="0">
+                    </div>
+                    <div class="input-row">
+                        <label>QuickBooks Version</label>
+                        <select id="qbVersion">
+                            <option value="">Select...</option>
+                            <option value="50">Essentials ($50)</option>
+                            <option value="70">Plus ($70)</option>
+                            <option value="140">Advanced ($140)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Right Column - Hours -->
+                <div class="column">
+                    <h2 class="column-header">Time Allocation (Hours)</h2>
+                    <div class="input-row">
+                        <label>Bank Account Hours</label>
+                        <input type="number" id="bankHours" placeholder="0" step="0.25">
+                    </div>
+                    <div class="input-row">
+                        <label>Credit Card Hours</label>
+                        <input type="number" id="ccHours" placeholder="0" step="0.25">
+                    </div>
+                    <div class="input-row">
+                        <label>Transaction Hours</label>
+                        <input type="number" id="transHours" placeholder="0" step="0.25">
+                    </div>
+                    <div class="input-row">
+                        <label>Property Hours</label>
+                        <input type="number" id="propHours" placeholder="0" step="0.25">
+                    </div>
+                    <div class="input-row">
+                        <label>AJE Hours</label>
+                        <input type="number" id="ajeHours" placeholder="0" step="0.25">
+                    </div>
+                    <div class="input-row">
+                        <label>Other Hours</label>
+                        <input type="number" id="otherHours" placeholder="0" step="0.25">
+                    </div>
+
+                    <div class="total-hours">
+                        <label>Total Monthly Hours</label>
+                        <div class="total-hours-value" id="totalHours">0.00</div>
+                    </div>
+                </div>
+            </div>
+
             <div class="results">
                 <h3 class="results-header">Monthly Quote</h3>
                 <div class="result-grid">
                     <div class="result-item">
-                        <div class="result-label">Base Price (Hours × Rate)</div>
+                        <div class="result-label">Base Price</div>
                         <div class="result-value" id="basePrice">$0.00</div>
                     </div>
                     <div class="result-item">
-                        <div class="result-label">Mid Price (+30% Markup)</div>
+                        <div class="result-label">Mid Price (+30%)</div>
                         <div class="result-value" id="midPrice">$0.00</div>
                     </div>
                     <div class="result-item">
-                        <div class="result-label">High Price (+50% Markup)</div>
+                        <div class="result-label">High Price (+50%)</div>
                         <div class="result-value" id="highPrice">$0.00</div>
                     </div>
                 </div>
@@ -172,44 +296,44 @@
         }
 
         function calculate() {
-            // Get input values
-            const bankAccounts = Number(document.getElementById('bankAccounts').value) || 0;
-            const creditCards = Number(document.getElementById('creditCards').value) || 0;
-            const transactions = Number(document.getElementById('transactions').value) || 0;
-            const transPerHour = Number(document.getElementById('transPerHour').value) || 0;
-            const monthlyAJEs = Number(document.getElementById('monthlyAJEs').value) || 0;
-            const ajesPerHour = Number(document.getElementById('ajesPerHour').value) || 0;
-            const otherHours = Number(document.getElementById('otherHours').value) || 0;
-            const hourlyRate = Number(document.getElementById('hourlyRate').value) || 0;
+            // Get hourly rate
+            const hourlyRate = Number(document.getElementById('hourlyRate').value) || 150;
+            
+            // Get QB fee
             const qbFee = Number(document.getElementById('qbVersion').value) || 0;
 
-            // Calculate transaction hours
-            const bankHours = bankAccounts * 0.5;
-            const cardHours = creditCards * 0.25;
-            const transactionHours = transPerHour ? transactions / transPerHour : 0;
-            const ajeHours = ajesPerHour ? monthlyAJEs / ajesPerHour : 0;
-
-            // Calculate total transactional hours
-            const totalTransHours = bankHours + cardHours + transactionHours + ajeHours;
-            document.getElementById('transactionalHours').textContent = totalTransHours.toFixed(2);
+            // Get all hours
+            const bankHours = Number(document.getElementById('bankHours').value) || 0;
+            const ccHours = Number(document.getElementById('ccHours').value) || 0;
+            const transHours = Number(document.getElementById('transHours').value) || 0;
+            const propHours = Number(document.getElementById('propHours').value) || 0;
+            const ajeHours = Number(document.getElementById('ajeHours').value) || 0;
+            const otherHours = Number(document.getElementById('otherHours').value) || 0;
 
             // Calculate total hours
-            const totalHours = totalTransHours + otherHours;
+            const totalHours = bankHours + ccHours + transHours + propHours + ajeHours + otherHours;
+            
+            // Update total hours display
             document.getElementById('totalHours').textContent = totalHours.toFixed(2);
 
-            // Calculate prices
-            const basePrice = (totalHours * hourlyRate) + qbFee;
+            // Calculate service prices (without QB fee)
+            const basePrice = (totalHours * hourlyRate);
             const midPrice = roundToNearest10(basePrice * 1.3);
             const highPrice = roundToNearest10(basePrice * 1.5);
 
+            // Add QB fee separately (not marked up)
+            const basePriceWithQB = basePrice + qbFee;
+            const midPriceWithQB = midPrice + qbFee;
+            const highPriceWithQB = highPrice + qbFee;
+
             // Update display
-            document.getElementById('basePrice').textContent = basePrice ? `$${basePrice.toFixed(2)}` : '$0.00';
-            document.getElementById('midPrice').textContent = midPrice ? `$${midPrice.toFixed(2)}` : '$0.00';
-            document.getElementById('highPrice').textContent = highPrice ? `$${highPrice.toFixed(2)}` : '$0.00';
+            document.getElementById('basePrice').textContent = basePriceWithQB ? `$${basePriceWithQB.toFixed(2)}` : '$0.00';
+            document.getElementById('midPrice').textContent = midPriceWithQB ? `$${midPriceWithQB.toFixed(2)}` : '$0.00';
+            document.getElementById('highPrice').textContent = highPriceWithQB ? `$${highPriceWithQB.toFixed(2)}` : '$0.00';
 
             // Show/hide warning
             document.getElementById('warning').style.display = 
-                highPrice > 1500 ? 'block' : 'none';
+                highPriceWithQB > 1500 ? 'block' : 'none';
         }
 
         // Add event listeners to all inputs
@@ -220,5 +344,7 @@
         // Initial calculation
         calculate();
     </script>
+</body>
+</html>
 </body>
 </html>
