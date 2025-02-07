@@ -378,10 +378,55 @@
                 <div id="warning" class="warning" style="display: none">
                     <span class="warning-icon">⚠️</span>
                     <span id="warningText"></span>
-                </div>
-            </div>
+             </div>
         </div>
     </div>
+
+                    <div class="cleanup-section" style="margin-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+    <h3 class="results-header">Cleanup & Onboarding Fees</h3>
+    <div class="cleanup-controls" style="background: white; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+        <div class="input-row">
+            <label for="cleanupMonths">Number of Cleanup Months</label>
+            <input type="number" id="cleanupMonths" placeholder="0" min="0" step="1">
+        </div>
+        <div class="input-row">
+            <label for="cleanupDiscount">Cleanup Discount (%)</label>
+            <input type="number" id="cleanupDiscount" placeholder="0" min="0" max="100" value="20">
+        </div>
+        <div class="input-row">
+            <label for="onboardingFee">Onboarding Fee ($)</label>
+            <input type="number" id="onboardingFee" placeholder="0" min="0" value="500">
+        </div>
+    </div>
+    <div class="result-grid">
+        <div class="result-item">
+            <div class="result-label">Base Cleanup</div>
+            <div class="result-value" id="baseCleanup">$0.00</div>
+        </div>
+        <div class="result-item">
+            <div class="result-label">Mid Cleanup</div>
+            <div class="result-value" id="midCleanup">$0.00</div>
+        </div>
+        <div class="result-item">
+            <div class="result-label">High Cleanup</div>
+            <div class="result-value" id="highCleanup">$0.00</div>
+        </div>
+    </div>
+    <div class="result-grid" style="margin-top: 16px;">
+        <div class="result-item">
+            <div class="result-label">Total with Base</div>
+            <div class="result-value" id="totalBase">$0.00</div>
+        </div>
+        <div class="result-item">
+            <div class="result-label">Total with Mid</div>
+            <div class="result-value" id="totalMid">$0.00</div>
+        </div>
+        <div class="result-item">
+            <div class="result-label">Total with High</div>
+            <div class="result-value" id="totalHigh">$0.00</div>
+        </div>
+    </div>
+</div>
 
     <script>
     function roundToNearest10(num) {
@@ -453,59 +498,76 @@
         return isValid;
     }
 
-    function calculate() {
-        // Get hourly rate and QB fee
-        const hourlyRate = Number(document.getElementById('hourlyRate').value) || 0;
-        const qbFee = Number(document.getElementById('qbVersion').value) || 0;
+  function calculate() {
+    // Get hourly rate and QB fee
+    const hourlyRate = Number(document.getElementById('hourlyRate').value) || 0;
+    const qbFee = Number(document.getElementById('qbVersion').value) || 0;
 
-        // Get markup percentages
-        const midMarkupPercent = Number(document.getElementById('midMarkup').value) || 0;
-        const highMarkupPercent = Number(document.getElementById('highMarkup').value) || 0;
+    // Get markup percentages
+    const midMarkupPercent = Number(document.getElementById('midMarkup').value) || 0;
+    const highMarkupPercent = Number(document.getElementById('highMarkup').value) || 0;
 
-        // Get all hours
-        const bankHours = Number(document.getElementById('bankHours').value) || 0;
-        const ccHours = Number(document.getElementById('ccHours').value) || 0;
-        const transHours = Number(document.getElementById('transHours').value) || 0;
-        const propHours = Number(document.getElementById('propHours').value) || 0;
-        const ajeHours = Number(document.getElementById('ajeHours').value) || 0;
-        const otherHours = Number(document.getElementById('otherHours').value) || 0;
+    // Get all hours
+    const bankHours = Number(document.getElementById('bankHours').value) || 0;
+    const ccHours = Number(document.getElementById('ccHours').value) || 0;
+    const transHours = Number(document.getElementById('transHours').value) || 0;
+    const propHours = Number(document.getElementById('propHours').value) || 0;
+    const ajeHours = Number(document.getElementById('ajeHours').value) || 0;
+    const otherHours = Number(document.getElementById('otherHours').value) || 0;
 
-        // Calculate total hours
-        const totalHours = bankHours + ccHours + transHours + propHours + ajeHours + otherHours;
-        
-        // Update total hours display
-        document.getElementById('totalHours').textContent = totalHours.toFixed(2);
+    // Calculate total hours
+    const totalHours = bankHours + ccHours + transHours + propHours + ajeHours + otherHours;
+    
+    // Update total hours display
+    document.getElementById('totalHours').textContent = totalHours.toFixed(2);
 
-        // Validate inputs
-        validateInputs();
+    // Validate inputs
+    validateInputs();
 
-        // Calculate service prices (without QB fee)
-        const basePrice = (totalHours * hourlyRate);
-        const midPrice = roundToNearest10(basePrice * (1 + midMarkupPercent/100));
-        const highPrice = roundToNearest10(basePrice * (1 + highMarkupPercent/100));
+    // Calculate service prices (without QB fee)
+    const basePrice = (totalHours * hourlyRate);
+    const midPrice = roundToNearest10(basePrice * (1 + midMarkupPercent/100));
+    const highPrice = roundToNearest10(basePrice * (1 + highMarkupPercent/100));
 
-        // Add QB fee separately (not marked up)
-        const basePriceWithQB = basePrice + qbFee;
-        const midPriceWithQB = midPrice + qbFee;
-        const highPriceWithQB = highPrice + qbFee;
+    // Add QB fee separately (not marked up)
+    const basePriceWithQB = basePrice + qbFee;
+    const midPriceWithQB = midPrice + qbFee;
+    const highPriceWithQB = highPrice + qbFee;
 
-        // Update display
-        document.getElementById('basePrice').textContent = basePriceWithQB ? `$${basePriceWithQB.toFixed(2)}` : '$0.00';
-        document.getElementById('midPrice').textContent = midPriceWithQB ? `$${midPriceWithQB.toFixed(2)}` : '$0.00';
-        document.getElementById('highPrice').textContent = highPriceWithQB ? `$${highPriceWithQB.toFixed(2)}` : '$0.00';
+    // Get cleanup and onboarding inputs
+    const cleanupMonths = Number(document.getElementById('cleanupMonths').value) || 0;
+    const cleanupDiscount = Number(document.getElementById('cleanupDiscount').value) || 0;
+    const onboardingFee = Number(document.getElementById('onboardingFee').value) || 0;
 
-        // Show/hide warning for high quotes
-        if (highPriceWithQB > 1500) {
-            document.getElementById('warning').style.display = 'block';
-            document.getElementById('warningText').textContent = 'Quote exceeds $1,500 - Send to accounting team';
-        }
+    // Calculate cleanup fees (monthly price * months * (1 - discount%))
+    const discountMultiplier = 1 - (cleanupDiscount / 100);
+    const baseCleanup = roundToNearest10(basePriceWithQB * cleanupMonths * discountMultiplier);
+    const midCleanup = roundToNearest10(midPriceWithQB * cleanupMonths * discountMultiplier);
+    const highCleanup = roundToNearest10(highPriceWithQB * cleanupMonths * discountMultiplier);
+
+    // Calculate totals including cleanup and onboarding
+    const totalBase = baseCleanup + onboardingFee;
+    const totalMid = midCleanup + onboardingFee;
+    const totalHigh = highCleanup + onboardingFee;
+
+    // Update monthly price display
+    document.getElementById('basePrice').textContent = basePriceWithQB ? `$${basePriceWithQB.toFixed(2)}` : '$0.00';
+    document.getElementById('midPrice').textContent = midPriceWithQB ? `$${midPriceWithQB.toFixed(2)}` : '$0.00';
+    document.getElementById('highPrice').textContent = highPriceWithQB ? `$${highPriceWithQB.toFixed(2)}` : '$0.00';
+
+    // Update cleanup price display
+    document.getElementById('baseCleanup').textContent = `$${baseCleanup.toFixed(2)}`;
+    document.getElementById('midCleanup').textContent = `$${midCleanup.toFixed(2)}`;
+    document.getElementById('highCleanup').textContent = `$${highCleanup.toFixed(2)}`;
+
+    // Update total price display
+    document.getElementById('totalBase').textContent = `$${totalBase.toFixed(2)}`;
+    document.getElementById('totalMid').textContent = `$${totalMid.toFixed(2)}`;
+    document.getElementById('totalHigh').textContent = `$${totalHigh.toFixed(2)}`;
+
+    // Show/hide warning for high quotes
+    if (highPriceWithQB > 1500) {
+        document.getElementById('warning').style.display = 'block';
+        document.getElementById('warningText').textContent = 'Quote exceeds $1,500 - Send to accounting team';
     }
-
-    // Add event listeners to all inputs
-    document.querySelectorAll('input, select').forEach(input => {
-        input.addEventListener('input', calculate);
-    });
-
-    // Initial calculation
-    calculate();
-</script>
+}
