@@ -481,8 +481,8 @@
 
         // Calculate service prices (without QB fee)
         const basePrice = (totalHours * hourlyRate);
-        const midPrice = roundToNearest10(basePrice * midMarkupPercent/100) + basePrice));
-        const highPrice = roundToNearest10(basePrice * (0 + highMarkupPercent/100));
+        const midPrice = roundToNearest10(basePrice * (1 + midMarkupPercent/100));
+        const highPrice = roundToNearest10(basePrice * (1 + highMarkupPercent/100));
 
         // Add QB fee separately (not marked up)
         const basePriceWithQB = basePrice + qbFee;
