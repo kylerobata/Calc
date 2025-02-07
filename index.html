@@ -429,4 +429,59 @@
             const midMarkupPercent = Number(document.getElementById('midMarkup').value) || 0;
             const highMarkupPercent = Number(document.getElementById('highMarkup').value) || 0;
 
-            // Get
+            // Get total hours
+            const bankHours = Number(document.getElementById('bankHours').value) || 0;
+            const ccHours = Number(document.getElementById('ccHours').value) || 0;
+            const transHours = Number(document.getElementById('transHours').value) || 0;
+            const propHours = Number(document.getElementById('propHours').value) || 0;
+            const ajeHours = Number(document.getElementById('ajeHours').value) || 0;
+            const otherHours = Number(document.getElementById('otherHours').value) || 0;
+            const totalHours = bankHours + ccHours + transHours + propHours + ajeHours + otherHours;
+
+            // Update total hours
+            document.getElementById('totalHours').innerText = totalHours.toFixed(2);
+
+            // Calculate base price, mid price, and high price
+            const basePrice = roundToNearest10((hourlyRate * totalHours) + qbFee);
+            const midPrice = roundToNearest10(basePrice * (1 + midMarkupPercent / 100));
+            const highPrice = roundToNearest10(basePrice * (1 + highMarkupPercent / 100));
+
+            // Update prices
+            document.getElementById('basePrice').innerText = `$${basePrice.toFixed(2)}`;
+            document.getElementById('midPrice').innerText = `$${midPrice.toFixed(2)}`;
+            document.getElementById('highPrice').innerText = `$${highPrice.toFixed(2)}`;
+
+            // Calculate cleanup total and final total
+            const cleanupMonths = Number(document.getElementById('cleanupMonths').value) || 0;
+            const cleanupDiscount = Number(document.getElementById('cleanupDiscount').value) || 0;
+            const onboardingFee = Number(document.getElementById('onboardingFee').value) || 0;
+
+            const cleanupTotal = cleanupMonths * basePrice * (1 - cleanupDiscount / 100);
+            const finalTotal = cleanupTotal + onboardingFee;
+
+            // Update cleanup total and final total
+            document.getElementById('cleanupTotal').innerText = `$${cleanupTotal.toFixed(2)}`;
+            document.getElementById('finalTotal').innerText = `$${finalTotal.toFixed(2)}`;
+
+            // Show warning if final total exceeds $1,500
+            const warning = document.getElementById('warning');
+            if (finalTotal > 1500) {
+                warning.style.display = 'flex';
+            } else {
+                warning.style.display = 'none';
+            }
+        }
+
+        // Add event listeners to inputs
+        document.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('input', () => {
+                validateInputs();
+                calculate();
+            });
+        });
+
+        // Initial calculation
+        calculate();
+    </script>
+</body>
+</html>
