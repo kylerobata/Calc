@@ -2,7 +2,8 @@
 <html>
 <head>
     <title>TrueBooks Accounting Bidding Calculator</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="theme-color" content="#1F2937">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -12,6 +13,8 @@
             --black: #1A1A1A;
             --gray-800: #1F2937;
             --gray-100: #F3F4F6;
+            --red: #ef4444;
+            --light-red: #fee2e2;
         }
 
         * {
@@ -51,7 +54,11 @@
             margin: 0;
         }
 
-        .rate-section {
+        .content {
+            padding: 24px;
+        }
+
+        .rate-section, .markup-control {
             background: var(--light-green);
             padding: 20px;
             margin: 20px;
@@ -59,20 +66,13 @@
             border: 1px solid var(--primary-green);
         }
 
-        .content {
-            padding: 24px;
+        .input-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+            margin-bottom: 12px;
+            align-items: center;
         }
-       
-        <div class="markup-control">
-                <div class="markup-row">
-                    <label for="midMarkup">Mid Price Markup (%)</label>
-                    <input type="number" id="midMarkup" value="30" min="0" max="100">
-                </div>
-                <div class="markup-row">
-                    <label for="highMarkup">High Price Markup (%)</label>
-                    <input type="number" id="highMarkup" value="50" min="0" max="100">
-                </div>
-            </div>
 
         .two-columns {
             display: grid;
@@ -97,29 +97,6 @@
             border-bottom: 2px solid var(--light-green);
         }
 
-        .input-row {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 16px;
-            margin-bottom: 12px;
-            align-items: center;
-        }
-
-        .total-hours {
-            background: var(--light-green);
-            padding: 16px;
-            border-radius: 8px;
-            margin-top: 16px;
-            border: 1px solid var(--primary-green);
-        }
-
-        .total-hours-value {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--dark-green);
-            margin-top: 4px;
-        }
-
         label {
             font-size: 14px;
             font-weight: 500;
@@ -139,6 +116,26 @@
             outline: none;
             border-color: var(--primary-green);
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        input.error {
+            border-color: var(--red);
+            background-color: var(--light-red);
+        }
+
+        .total-hours {
+            background: var(--light-green);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            border: 1px solid var(--primary-green);
+        }
+
+        .total-hours-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark-green);
+            margin-top: 4px;
         }
 
         .results {
@@ -182,120 +179,91 @@
         }
 
         .warning {
-            background: #fef2f2;
-            border: 1px solid #fee2e2;
+            background: var(--light-red);
+            border: 1px solid var(--red);
             border-radius: 6px;
             padding: 12px 16px;
             margin-top: 16px;
             display: flex;
             align-items: center;
-            color: #991b1b;
+            color: var(--red);
         }
 
-        input.error {
-            border-color: #ef4444;
-            background-color: #fee2e2;
+        @media (max-width: 768px) {
+            .calculator {
+                margin: 0;
+                width: 100%;
+                min-width: 320px;
+            }
+
+            body {
+                padding: 8px;
+            }
+
+            .content {
+                padding: 12px;
+            }
+
+            .two-columns {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .input-row {
+                grid-template-columns: 1.5fr 1fr;
+                gap: 8px;
+                font-size: 14px;
+            }
+
+            .rate-section, .markup-control {
+                margin: 12px 8px;
+                padding: 12px;
+            }
+
+            .column {
+                padding: 12px;
+            }
+
+            label {
+                font-size: 12px;
+            }
+
+            input, select {
+                padding: 6px 8px;
+                font-size: 13px;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .result-item {
+                padding: 12px;
+            }
+
+            .result-value {
+                font-size: 18px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .column-header {
+                font-size: 14px;
+                margin-bottom: 12px;
+            }
+
+            .total-hours {
+                margin-top: 12px;
+                padding: 12px;
+            }
+
+            .total-hours-value {
+                font-size: 16px;
+            }
         }
-
-        .error-message {
-            color: #dc2626;
-            font-size: 12px;
-            margin-top: 4px;
-            display: none;
-        }
-
-        .markup-control {
-            background: var(--light-green);
-            padding: 16px;
-            border-radius: 8px;
-            margin: 20px;
-            border: 1px solid var(--primary-green);
-        }
-
-        .markup-row {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 16px;
-            margin-bottom: 12px;
-            align-items: center;
-        }
-
-    @media (max-width: 768px) {
-    .calculator {
-        margin: 0;
-        width: 100%;
-        min-width: 320px;
-    }
-
-    body {
-        padding: 8px;
-    }
-
-    .content {
-        padding: 12px;
-    }
-
-    .two-columns {
-        grid-template-columns: 1fr 1fr; /* Keep two columns */
-        gap: 12px; /* Reduce gap */
-    }
-
-    .input-row {
-        grid-template-columns: 1.5fr 1fr; /* Adjust ratio */
-        gap: 8px;
-        font-size: 14px;
-    }
-
-    .rate-section {
-        margin: 12px 8px;
-        padding: 12px;
-    }
-
-    .column {
-        padding: 12px;
-    }
-
-    label {
-        font-size: 12px; /* Smaller font for mobile */
-    }
-
-    input, select {
-        padding: 6px 8px;
-        font-size: 13px;
-    }
-
-    /* Stack only the quote results */
-    .result-grid {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
-
-    .result-item {
-        padding: 12px;
-    }
-
-    .result-value {
-        font-size: 18px;
-    }
-
-    .header h1 {
-        font-size: 18px;
-    }
-
-    .column-header {
-        font-size: 14px;
-        margin-bottom: 12px;
-    }
-
-    .total-hours {
-        margin-top: 12px;
-        padding: 12px;
-    }
-
-    .total-hours-value {
-        font-size: 16px;
-    }
-}
     </style>
 </head>
 <body>
@@ -312,29 +280,39 @@
                 </div>
             </div>
 
+            <div class="markup-control">
+                <div class="input-row">
+                    <label for="midMarkup">Mid Price Markup (%)</label>
+                    <input type="number" id="midMarkup" value="30" min="0" max="100">
+                </div>
+                <div class="input-row">
+                    <label for="highMarkup">High Price Markup (%)</label>
+                    <input type="number" id="highMarkup" value="50" min="0" max="100">
+                </div>
+            </div>
+
             <div class="two-columns">
-                <!-- Left Column - Service Items -->
                 <div class="column">
                     <h2 class="column-header">Service Requirements</h2>
                     <div class="input-row">
                         <label>Bank Accounts</label>
-                        <input type="number" id="bankAccounts" placeholder="0">
+                        <input type="number" id="bankAccounts" placeholder="0" min="0">
                     </div>
                     <div class="input-row">
                         <label>Credit Cards</label>
-                        <input type="number" id="creditCards" placeholder="0">
+                        <input type="number" id="creditCards" placeholder="0" min="0">
                     </div>
                     <div class="input-row">
                         <label>Monthly Transactions</label>
-                        <input type="number" id="transactions" placeholder="0">
+                        <input type="number" id="transactions" placeholder="0" min="0">
                     </div>
                     <div class="input-row">
                         <label>Properties</label>
-                        <input type="number" id="properties" placeholder="0">
+                        <input type="number" id="properties" placeholder="0" min="0">
                     </div>
                     <div class="input-row">
                         <label>Monthly AJEs</label>
-                        <input type="number" id="monthlyAJEs" placeholder="0">
+                        <input type="number" id="monthlyAJEs" placeholder="0" min="0">
                     </div>
                     <div class="input-row">
                         <label>QuickBooks Version</label>
@@ -347,32 +325,31 @@
                     </div>
                 </div>
 
-                <!-- Right Column - Hours -->
                 <div class="column">
                     <h2 class="column-header">Time Allocation (Hours)</h2>
                     <div class="input-row">
                         <label>Bank Account Hours</label>
-                        <input type="number" id="bankHours" placeholder="0" step="0.25">
+                        <input type="number" id="bankHours" placeholder="0" step="0.25" min="0">
                     </div>
                     <div class="input-row">
                         <label>Credit Card Hours</label>
-                        <input type="number" id="ccHours" placeholder="0" step="0.25">
+                        <input type="number" id="ccHours" placeholder="0" step="0.25" min="0">
                     </div>
                     <div class="input-row">
                         <label>Transaction Hours</label>
-                        <input type="number" id="transHours" placeholder="0" step="0.25">
+                        <input type="number" id="transHours" placeholder="0" step="0.25" min="0">
                     </div>
                     <div class="input-row">
                         <label>Property Hours</label>
-                        <input type="number" id="propHours" placeholder="0" step="0.25">
+                        <input type="number" id="propHours" placeholder="0" step="0.25" min="0">
                     </div>
                     <div class="input-row">
                         <label>AJE Hours</label>
-                        <input type="number" id="ajeHours" placeholder="0" step="0.25">
+                        <input type="number" id="ajeHours" placeholder="0" step="0.25" min="0">
                     </div>
                     <div class="input-row">
                         <label>Other Hours</label>
-                        <input type="number" id="otherHours" placeholder="0" step="0.25">
+                        <input type="number" id="otherHours" placeholder="0" step="0.25" min="0">
                     </div>
 
                     <div class="total-hours">
@@ -390,23 +367,23 @@
                         <div class="result-value" id="basePrice">$0.00</div>
                     </div>
                     <div class="result-item">
-                        <div class="result-label">Mid Price (+30%)</div>
+                        <div class="result-label">Mid Price</div>
                         <div class="result-value" id="midPrice">$0.00</div>
                     </div>
                     <div class="result-item">
-                        <div class="result-label">High Price (+50%)</div>
+                        <div class="result-label">High Price</div>
                         <div class="result-value" id="highPrice">$0.00</div>
                     </div>
                 </div>
                 <div id="warning" class="warning" style="display: none">
                     <span class="warning-icon">⚠️</span>
-                    Quote exceeds $1,500 - Send to accounting team
+                    <span id="warningText"></span>
                 </div>
             </div>
         </div>
     </div>
 
-<script>
+    <script>
         function roundToNearest10(num) {
             return Math.round(num / 10) * 10;
         }
@@ -425,13 +402,7 @@
             const ajeHours = Number(document.getElementById('ajeHours').value) || 0;
 
             let isValid = true;
-
-            // Validate no negative hours
-            document.querySelectorAll('input[type="number"]').forEach(input => {
-                if (Number(input.value) < 0) {
-                    input.value = 0;
-                }
-            });
+            let errorMessage = '';
 
             // Reset all error states
             document.querySelectorAll('input').forEach(input => {
@@ -441,93 +412,33 @@
             // Validate required hours based on service requirements
             if (bankAccounts > 0 && bankHours === 0) {
                 document.getElementById('bankHours').classList.add('error');
+                errorMessage = 'Please assign hours for bank accounts';
                 isValid = false;
             }
 
             if (creditCards > 0 && ccHours === 0) {
                 document.getElementById('ccHours').classList.add('error');
+                errorMessage = errorMessage || 'Please assign hours for credit cards';
                 isValid = false;
             }
 
             if (transactions > 0 && transHours === 0) {
                 document.getElementById('transHours').classList.add('error');
+                errorMessage = errorMessage || 'Please assign hours for transactions';
                 isValid = false;
             }
 
             if (properties > 0 && propHours === 0) {
                 document.getElementById('propHours').classList.add('error');
+                errorMessage = errorMessage || 'Please assign hours for properties';
                 isValid = false;
             }
 
             if (monthlyAJEs > 0 && ajeHours === 0) {
                 document.getElementById('ajeHours').classList.add('error');
+                errorMessage = errorMessage || 'Please assign hours for AJEs';
                 isValid = false;
             }
 
-            return isValid;
-        }
-
-        function calculate() {
-            // Get hourly rate and QB fee
-            const hourlyRate = Number(document.getElementById('hourlyRate').value) || 150;
-            const qbFee = Number(document.getElementById('qbVersion').value) || 0;
-
-            // Get markup percentages
-            const midMarkupPercent = Number(document.getElementById('midMarkup').value) || 30;
-            const highMarkupPercent = Number(document.getElementById('highMarkup').value) || 50;
-
-            // Get all hours
-            const bankHours = Number(document.getElementById('bankHours').value) || 0;
-            const ccHours = Number(document.getElementById('ccHours').value) || 0;
-            const transHours = Number(document.getElementById('transHours').value) || 0;
-            const propHours = Number(document.getElementById('propHours').value) || 0;
-            const ajeHours = Number(document.getElementById('ajeHours').value) || 0;
-            const otherHours = Number(document.getElementById('otherHours').value) || 0;
-
-            // Validate inputs
-            const isValid = validateInputs();
             if (!isValid) {
-                document.getElementById('warning').style.display = 'block';
-                document.getElementById('warning').innerHTML = 
-                    '<span class="warning-icon">⚠️</span> Please assign hours for all services with requirements greater than 0';
-            } else {
-                document.getElementById('warning').style.display = 'none';
-            }
-
-            // Calculate total hours
-            const totalHours = bankHours + ccHours + transHours + propHours + ajeHours + otherHours;
-            
-            // Update total hours display
-            document.getElementById('totalHours').textContent = totalHours.toFixed(2);
-
-            // Calculate service prices (without QB fee)
-            const basePrice = (totalHours * hourlyRate);
-            const midPrice = roundToNearest10(basePrice * (1 + midMarkupPercent/100));
-            const highPrice = roundToNearest10(basePrice * (1 + highMarkupPercent/100));
-
-            // Add QB fee separately (not marked up)
-            const basePriceWithQB = basePrice + qbFee;
-            const midPriceWithQB = midPrice + qbFee;
-            const highPriceWithQB = highPrice + qbFee;
-
-            // Update display
-            document.getElementById('basePrice').textContent = basePriceWithQB ? `$${basePriceWithQB.toFixed(2)}` : '$0.00';
-            document.getElementById('midPrice').textContent = midPriceWithQB ? `$${midPriceWithQB.toFixed(2)}` : '$0.00';
-            document.getElementById('highPrice').textContent = highPriceWithQB ? `$${highPriceWithQB.toFixed(2)}` : '$0.00';
-
-            // Show/hide warning for high quotes
-            if (highPriceWithQB > 1500) {
-                document.getElementById('warning').style.display = 'block';
-                document.getElementById('warning').innerHTML = 
-                    '<span class="warning-icon">⚠️</span> Quote exceeds $1,500 - Send to accounting team';
-            }
-        }
-
-        // Add event listeners to all inputs
-        document.querySelectorAll('input, select').forEach(input => {
-            input.addEventListener('input', calculate);
-        });
-
-        // Initial calculation
-        calculate();
-    </script>
+                document.getElementByI
