@@ -300,6 +300,14 @@
                         <input type="number" id="monthlyAJEs" min="0">
                     </div>
                     <div class="input-row">
+                        <label>Payroll</label>
+                        <select id="payroll">
+                            <option value="">Select...</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="input-row">
                         <label>QuickBooks Version</label>
                         <select id="qbVersion">
                             <option value="">Select...</option>
@@ -311,6 +319,15 @@
                     <div class="input-row">
                         <label for="onboardingFee">Onboarding Fee ($)</label>
                         <input type="number" id="onboardingFee" value="0" min="0">
+                    </div>
+                    <div class="input-row">
+                        <label>Payment Processor</label>
+                        <select id="paymentProcessor">
+                            <option value="">Select...</option>
+                            <option value="stripe">Stripe</option>
+                            <option value="square">Square</option>
+                            <option value="other">Other</option>
+                        </select>
                     </div>
                 </div>
 
@@ -351,15 +368,15 @@
             <div class="results">
                 <h3 class="results-header">Monthly Quote</h3>
                 <div class="result-grid">
-                    <div class="result-item" onclick="selectPrice('basePrice')">
-                        <div class="result-label">Base Price</div>
-                        <div class="result-value" id="basePrice">$0.00</div>
+                    <div class="result-item" onclick="selectPrice('lowPrice')" ondblclick="deselectPrice('lowPrice')">
+                        <div class="result-label">Low Price</div>
+                        <div class="result-value" id="lowPrice">$0.00</div>
                     </div>
-                    <div class="result-item" onclick="selectPrice('midPrice')">
+                    <div class="result-item" onclick="selectPrice('midPrice')" ondblclick="deselectPrice('midPrice')">
                         <div class="result-label">Mid Price</div>
                         <div class="result-value" id="midPrice">$0.00</div>
                     </div>
-                    <div class="result-item" onclick="selectPrice('highPrice')">
+                    <div class="result-item" onclick="selectPrice('highPrice')" ondblclick="deselectPrice('highPrice')">
                         <div class="result-label">High Price</div>
                         <div class="result-value" id="highPrice">$0.00</div>
                     </div>
@@ -380,11 +397,11 @@
                         </div>
                     </div>
                     <div class="result-item">
-                        <div class="result-label">Selected Price</div>
+                        <div class="result-label">Clean Up No Discount Total</div>
                         <div class="result-value" id="selectedPrice">$0.00</div>
                     </div>
                     <div class="result-item">
-                        <div class="result-label">Cleanup Total</div>
+                        <div class="result-label">Clean Up</div>
                         <div class="result-value" id="cleanupTotal">$0.00</div>
                     </div>
                 </div>
@@ -448,23 +465,25 @@
             // Update total hours
             document.getElementById('totalHours').innerText = totalHours.toFixed(2);
 
-            // Calculate base price, mid price, and high price
-            const basePrice = roundToNearest10((hourlyRate * totalHours) + qbFee + onboardingFee);
-            const midPrice = roundToNearest10(basePrice * (1 + midMarkupPercent / 100));
-            const highPrice = roundToNearest10(basePrice * (1 + highMarkupPercent / 100));
+            // Calculate low price, mid price, and high price
+            const lowPrice = roundToNearest10((hourlyRate * totalHours) + qbFee + onboardingFee);
+            const midPrice = roundToNearest10(lowPrice * (1 + midMarkupPercent / 100));
+            const highPrice = roundToNearest10(lowPrice * (1 + highMarkupPercent / 100));
 
             // Update prices
-            document.getElementById('basePrice').innerText = `$${basePrice.toFixed(2)}`;
+            document.getElementById('lowPrice').innerText = `$${lowPrice.toFixed(2)}`;
             document.getElementById('midPrice').innerText = `$${midPrice.toFixed(2)}`;
             document.getElementById('highPrice').innerText = `$${highPrice.toFixed(2)}`;
 
             // Calculate cleanup total based on selected price
-            const selectedPrice = document.querySelector('.result-item.selected .result-value').innerText.replace('$', '') || basePrice;
+            const selectedPriceElement = document.querySelector('.result-item.selected .result-value');
+            const selectedPrice = selectedPriceElement ? Number(selectedPriceElement.innerText.replace('$', '')) : lowPrice;
             const cleanupMonths = Number(document.getElementById('cleanupMonths').value) || 0;
             const cleanupDiscount = Number(document.getElementById('cleanupDiscount').value) || 0;
             const cleanupTotal = cleanupMonths * selectedPrice * (1 - cleanupDiscount / 100);
 
-            // Update cleanup total
+            // Update cleanup total and clean up no discount total
+            document.getElementById('selectedPrice').innerText = `$${(selectedPrice * cleanupMonths).toFixed(2)}`;
             document.getElementById('cleanupTotal').innerText = `$${cleanupTotal.toFixed(2)}`;
 
             // Show warning if final total exceeds $1,500
@@ -485,24 +504,12 @@
             // Add selected class to clicked result item
             document.getElementById(priceId).parentElement.classList.add('selected');
 
-            // Update selected price
-            const selectedPrice = document.getElementById(priceId).innerText;
-            document.getElementById('selectedPrice').innerText = selectedPrice;
-
             // Recalculate cleanup total
             calculate();
         }
 
-        // Add event listeners to inputs
-        document.querySelectorAll('input, select').forEach(input => {
-            input.addEventListener('input', () => {
-                validateInputs();
-                calculate();
-            });
-        });
-
-        // Initial calculation
-        calculate();
-    </script>
+        function deselectPrice(priceId) {
+            // Remove selected class from clicked result item
+            document.getElementById(priceId).parentElement.classList.remove('
 </body>
 </html>
