@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>TrueBooks Accounting Bidding Calculator</title>
+    <title>TrueBooks Accounting Bidding Calculator 1.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="theme-color" content="#1F2937">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -455,12 +455,12 @@
 
     function calculate() {
         // Get hourly rate and QB fee
-        const hourlyRate = Number(document.getElementById('hourlyRate').value) || 150;
+        const hourlyRate = Number(document.getElementById('hourlyRate').value) || 0;
         const qbFee = Number(document.getElementById('qbVersion').value) || 0;
 
         // Get markup percentages
-        const midMarkupPercent = Number(document.getElementById('midMarkup').value) || 30;
-        const highMarkupPercent = Number(document.getElementById('highMarkup').value) || 50;
+        const midMarkupPercent = Number(document.getElementById('midMarkup').value) || 0;
+        const highMarkupPercent = Number(document.getElementById('highMarkup').value) || 0;
 
         // Get all hours
         const bankHours = Number(document.getElementById('bankHours').value) || 0;
@@ -481,8 +481,8 @@
 
         // Calculate service prices (without QB fee)
         const basePrice = (totalHours * hourlyRate);
-        const midPrice = roundToNearest10(basePrice * (1 + midMarkupPercent/100));
-        const highPrice = roundToNearest10(basePrice * (1 + highMarkupPercent/100));
+        const midPrice = roundToNearest10(basePrice * (0 + midMarkupPercent/100));
+        const highPrice = roundToNearest10(basePrice * (0 + highMarkupPercent/100));
 
         // Add QB fee separately (not marked up)
         const basePriceWithQB = basePrice + qbFee;
