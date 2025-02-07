@@ -166,6 +166,11 @@
             border-radius: 8px;
             color: var(--black);
             cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .result-item.selected {
+            background-color: var(--light-green);
         }
 
         .result-label {
@@ -303,6 +308,10 @@
                             <option value="140">Advanced ($140)</option>
                         </select>
                     </div>
+                    <div id="customFields"></div>
+                    <div class="input-row">
+                        <button id="addCustomField">Add Custom Field</button>
+                    </div>
                 </div>
 
                 <div class="column">
@@ -389,6 +398,8 @@
     </div>
 
     <script>
+        let customFieldCount = 0;
+
         function roundToNearest10(num) {
             return Math.round(num / 10) * 10;
         }
@@ -433,7 +444,17 @@
             const propHours = Number(document.getElementById('propHours').value) || 0;
             const ajeHours = Number(document.getElementById('ajeHours').value) || 0;
             const otherHours = Number(document.getElementById('otherHours').value) || 0;
-            const totalHours = bankHours + ccHours + transHours + propHours + ajeHours + otherHours;
+
+            // Get custom field hours
+            let customHours = 0;
+            for (let i = 0; i < customFieldCount; i++) {
+                const customHourInput = document.getElementById(`customHours_${i}`);
+                if (customHourInput) {
+                    customHours += Number(customHourInput.value) || 0;
+                }
+            }
+
+            const totalHours = bankHours + ccHours + transHours + propHours + ajeHours + otherHours + customHours;
 
             // Update total hours
             document.getElementById('totalHours').innerText = totalHours.toFixed(2);
@@ -483,16 +504,17 @@
             calculate();
         }
 
-        // Add event listeners to inputs
-        document.querySelectorAll('input, select').forEach(input => {
-            input.addEventListener('input', () => {
-                validateInputs();
-                calculate();
-            });
-        });
+        function addCustomField() {
+            const customFieldsContainer = document.getElementById('customFields');
+            const customFieldRow = document.createElement('div');
+            customFieldRow.className = 'input-row';
+            customFieldRow.innerHTML = `
+                <input type="text" id="customText_${customFieldCount}" placeholder="Custom Field">
+                <input type="number" id="customHours_${customFieldCount}" step="0.25" min="0" placeholder="Hours">
+            `;
+            customFieldsContainer.appendChild(customFieldRow);
+            customFieldCount++;
+        }
 
-        // Initial calculation
-        calculate();
-    </script>
-</body>
-</html>
+        // Add event listeners to inputs
+        document
