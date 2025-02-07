@@ -169,7 +169,7 @@
             transition: background-color 0.3s;
         }
 
-        .result-item.selected {
+        .result-item:hover, .result-item.selected {
             background-color: var(--light-green);
         }
 
@@ -308,9 +308,9 @@
                             <option value="140">Advanced ($140)</option>
                         </select>
                     </div>
-                    <div id="customFields"></div>
                     <div class="input-row">
-                        <button id="addCustomField">Add Custom Field</button>
+                        <label for="onboardingFee">Onboarding Fee ($)</label>
+                        <input type="number" id="onboardingFee" value="0" min="0">
                     </div>
                 </div>
 
@@ -398,8 +398,6 @@
     </div>
 
     <script>
-        let customFieldCount = 0;
-
         function roundToNearest10(num) {
             return Math.round(num / 10) * 10;
         }
@@ -432,6 +430,7 @@
             // Get hourly rate and QB fee
             const hourlyRate = Number(document.getElementById('hourlyRate').value) || 0;
             const qbFee = Number(document.getElementById('qbVersion').value) || 0;
+            const onboardingFee = Number(document.getElementById('onboardingFee').value) || 0;
 
             // Get markup percentages
             const midMarkupPercent = Number(document.getElementById('midMarkup').value) || 0;
@@ -444,23 +443,13 @@
             const propHours = Number(document.getElementById('propHours').value) || 0;
             const ajeHours = Number(document.getElementById('ajeHours').value) || 0;
             const otherHours = Number(document.getElementById('otherHours').value) || 0;
-
-            // Get custom field hours
-            let customHours = 0;
-            for (let i = 0; i < customFieldCount; i++) {
-                const customHourInput = document.getElementById(`customHours_${i}`);
-                if (customHourInput) {
-                    customHours += Number(customHourInput.value) || 0;
-                }
-            }
-
-            const totalHours = bankHours + ccHours + transHours + propHours + ajeHours + otherHours + customHours;
+            const totalHours = bankHours + ccHours + transHours + propHours + ajeHours + otherHours;
 
             // Update total hours
             document.getElementById('totalHours').innerText = totalHours.toFixed(2);
 
             // Calculate base price, mid price, and high price
-            const basePrice = roundToNearest10((hourlyRate * totalHours) + qbFee);
+            const basePrice = roundToNearest10((hourlyRate * totalHours) + qbFee + onboardingFee);
             const midPrice = roundToNearest10(basePrice * (1 + midMarkupPercent / 100));
             const highPrice = roundToNearest10(basePrice * (1 + highMarkupPercent / 100));
 
@@ -504,17 +493,16 @@
             calculate();
         }
 
-        function addCustomField() {
-            const customFieldsContainer = document.getElementById('customFields');
-            const customFieldRow = document.createElement('div');
-            customFieldRow.className = 'input-row';
-            customFieldRow.innerHTML = `
-                <input type="text" id="customText_${customFieldCount}" placeholder="Custom Field">
-                <input type="number" id="customHours_${customFieldCount}" step="0.25" min="0" placeholder="Hours">
-            `;
-            customFieldsContainer.appendChild(customFieldRow);
-            customFieldCount++;
-        }
-
         // Add event listeners to inputs
-        document
+        document.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('input', () => {
+                validateInputs();
+                calculate();
+            });
+        });
+
+        // Initial calculation
+        calculate();
+    </script>
+</body>
+</html>
