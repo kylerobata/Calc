@@ -165,6 +165,7 @@
             padding: 16px;
             border-radius: 8px;
             color: var(--black);
+            cursor: pointer;
         }
 
         .result-label {
@@ -341,15 +342,15 @@
             <div class="results">
                 <h3 class="results-header">Monthly Quote</h3>
                 <div class="result-grid">
-                    <div class="result-item">
+                    <div class="result-item" onclick="selectPrice('basePrice')">
                         <div class="result-label">Base Price</div>
                         <div class="result-value" id="basePrice">$0.00</div>
                     </div>
-                    <div class="result-item">
+                    <div class="result-item" onclick="selectPrice('midPrice')">
                         <div class="result-label">Mid Price</div>
                         <div class="result-value" id="midPrice">$0.00</div>
                     </div>
-                    <div class="result-item">
+                    <div class="result-item" onclick="selectPrice('highPrice')">
                         <div class="result-label">High Price</div>
                         <div class="result-value" id="highPrice">$0.00</div>
                     </div>
@@ -357,7 +358,7 @@
 
                 <div class="section-divider"></div>
 
-                <h3 class="results-header">Cleanup & Onboarding</h3>
+                <h3 class="results-header">Cleanup</h3>
                 <div class="result-grid">
                     <div class="result-item">
                         <div class="input-row">
@@ -368,18 +369,14 @@
                             <label>Discount (%)</label>
                             <input type="number" id="cleanupDiscount" value="10" min="0" max="100">
                         </div>
-                        <div class="input-row">
-                            <label>Onboarding ($)</label>
-                            <input type="number" id="onboardingFee" value="0" min="0">
-                        </div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Selected Price</div>
+                        <div class="result-value" id="selectedPrice">$0.00</div>
                     </div>
                     <div class="result-item">
                         <div class="result-label">Cleanup Total</div>
                         <div class="result-value" id="cleanupTotal">$0.00</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-label">Final Total</div>
-                        <div class="result-value" id="finalTotal">$0.00</div>
                     </div>
                 </div>
 
@@ -451,25 +448,39 @@
             document.getElementById('midPrice').innerText = `$${midPrice.toFixed(2)}`;
             document.getElementById('highPrice').innerText = `$${highPrice.toFixed(2)}`;
 
-            // Calculate cleanup total and final total
+            // Calculate cleanup total based on selected price
+            const selectedPrice = document.querySelector('.result-item.selected .result-value').innerText.replace('$', '') || basePrice;
             const cleanupMonths = Number(document.getElementById('cleanupMonths').value) || 0;
             const cleanupDiscount = Number(document.getElementById('cleanupDiscount').value) || 0;
-            const onboardingFee = Number(document.getElementById('onboardingFee').value) || 0;
+            const cleanupTotal = cleanupMonths * selectedPrice * (1 - cleanupDiscount / 100);
 
-            const cleanupTotal = cleanupMonths * basePrice * (1 - cleanupDiscount / 100);
-            const finalTotal = cleanupTotal + onboardingFee;
-
-            // Update cleanup total and final total
+            // Update cleanup total
             document.getElementById('cleanupTotal').innerText = `$${cleanupTotal.toFixed(2)}`;
-            document.getElementById('finalTotal').innerText = `$${finalTotal.toFixed(2)}`;
 
             // Show warning if final total exceeds $1,500
             const warning = document.getElementById('warning');
-            if (finalTotal > 1500) {
+            if (cleanupTotal > 1500) {
                 warning.style.display = 'flex';
             } else {
                 warning.style.display = 'none';
             }
+        }
+
+        function selectPrice(priceId) {
+            // Remove selected class from all result items
+            document.querySelectorAll('.result-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+
+            // Add selected class to clicked result item
+            document.getElementById(priceId).parentElement.classList.add('selected');
+
+            // Update selected price
+            const selectedPrice = document.getElementById(priceId).innerText;
+            document.getElementById('selectedPrice').innerText = selectedPrice;
+
+            // Recalculate cleanup total
+            calculate();
         }
 
         // Add event listeners to inputs
