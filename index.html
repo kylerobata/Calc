@@ -384,61 +384,128 @@
     </div>
 
     <script>
-        function roundToNearest10(num) {
-            return Math.round(num / 10) * 10;
+    function roundToNearest10(num) {
+        return Math.round(num / 10) * 10;
+    }
+
+    function validateInputs() {
+        const bankAccounts = Number(document.getElementById('bankAccounts').value) || 0;
+        const creditCards = Number(document.getElementById('creditCards').value) || 0;
+        const transactions = Number(document.getElementById('transactions').value) || 0;
+        const properties = Number(document.getElementById('properties').value) || 0;
+        const monthlyAJEs = Number(document.getElementById('monthlyAJEs').value) || 0;
+
+        const bankHours = Number(document.getElementById('bankHours').value) || 0;
+        const ccHours = Number(document.getElementById('ccHours').value) || 0;
+        const transHours = Number(document.getElementById('transHours').value) || 0;
+        const propHours = Number(document.getElementById('propHours').value) || 0;
+        const ajeHours = Number(document.getElementById('ajeHours').value) || 0;
+
+        let isValid = true;
+        let errorMessage = '';
+
+        // Reset all error states
+        document.querySelectorAll('input').forEach(input => {
+            input.classList.remove('error');
+        });
+
+        // Validate required hours based on service requirements
+        if (bankAccounts > 0 && bankHours === 0) {
+            document.getElementById('bankHours').classList.add('error');
+            errorMessage = 'Please assign hours for bank accounts';
+            isValid = false;
         }
 
-        function validateInputs() {
-            const bankAccounts = Number(document.getElementById('bankAccounts').value) || 0;
-            const creditCards = Number(document.getElementById('creditCards').value) || 0;
-            const transactions = Number(document.getElementById('transactions').value) || 0;
-            const properties = Number(document.getElementById('properties').value) || 0;
-            const monthlyAJEs = Number(document.getElementById('monthlyAJEs').value) || 0;
+        if (creditCards > 0 && ccHours === 0) {
+            document.getElementById('ccHours').classList.add('error');
+            errorMessage = errorMessage || 'Please assign hours for credit cards';
+            isValid = false;
+        }
 
-            const bankHours = Number(document.getElementById('bankHours').value) || 0;
-            const ccHours = Number(document.getElementById('ccHours').value) || 0;
-            const transHours = Number(document.getElementById('transHours').value) || 0;
-            const propHours = Number(document.getElementById('propHours').value) || 0;
-            const ajeHours = Number(document.getElementById('ajeHours').value) || 0;
+        if (transactions > 0 && transHours === 0) {
+            document.getElementById('transHours').classList.add('error');
+            errorMessage = errorMessage || 'Please assign hours for transactions';
+            isValid = false;
+        }
 
-            let isValid = true;
-            let errorMessage = '';
+        if (properties > 0 && propHours === 0) {
+            document.getElementById('propHours').classList.add('error');
+            errorMessage = errorMessage || 'Please assign hours for properties';
+            isValid = false;
+        }
 
-            // Reset all error states
-            document.querySelectorAll('input').forEach(input => {
-                input.classList.remove('error');
-            });
+        if (monthlyAJEs > 0 && ajeHours === 0) {
+            document.getElementById('ajeHours').classList.add('error');
+            errorMessage = errorMessage || 'Please assign hours for AJEs';
+            isValid = false;
+        }
 
-            // Validate required hours based on service requirements
-            if (bankAccounts > 0 && bankHours === 0) {
-                document.getElementById('bankHours').classList.add('error');
-                errorMessage = 'Please assign hours for bank accounts';
-                isValid = false;
-            }
+        // Display error message if validation fails
+        const warningElement = document.getElementById('warning');
+        const warningTextElement = document.getElementById('warningText');
+        if (!isValid) {
+            warningElement.style.display = 'block';
+            warningTextElement.textContent = errorMessage;
+        } else {
+            warningElement.style.display = 'none';
+        }
 
-            if (creditCards > 0 && ccHours === 0) {
-                document.getElementById('ccHours').classList.add('error');
-                errorMessage = errorMessage || 'Please assign hours for credit cards';
-                isValid = false;
-            }
+        return isValid;
+    }
 
-            if (transactions > 0 && transHours === 0) {
-                document.getElementById('transHours').classList.add('error');
-                errorMessage = errorMessage || 'Please assign hours for transactions';
-                isValid = false;
-            }
+    function calculate() {
+        // Get hourly rate and QB fee
+        const hourlyRate = Number(document.getElementById('hourlyRate').value) || 150;
+        const qbFee = Number(document.getElementById('qbVersion').value) || 0;
 
-            if (properties > 0 && propHours === 0) {
-                document.getElementById('propHours').classList.add('error');
-                errorMessage = errorMessage || 'Please assign hours for properties';
-                isValid = false;
-            }
+        // Get markup percentages
+        const midMarkupPercent = Number(document.getElementById('midMarkup').value) || 30;
+        const highMarkupPercent = Number(document.getElementById('highMarkup').value) || 50;
 
-            if (monthlyAJEs > 0 && ajeHours === 0) {
-                document.getElementById('ajeHours').classList.add('error');
-                errorMessage = errorMessage || 'Please assign hours for AJEs';
-                isValid = false;
-            }
+        // Get all hours
+        const bankHours = Number(document.getElementById('bankHours').value) || 0;
+        const ccHours = Number(document.getElementById('ccHours').value) || 0;
+        const transHours = Number(document.getElementById('transHours').value) || 0;
+        const propHours = Number(document.getElementById('propHours').value) || 0;
+        const ajeHours = Number(document.getElementById('ajeHours').value) || 0;
+        const otherHours = Number(document.getElementById('otherHours').value) || 0;
 
-            if (!isValid) {
-                document.getElementByI
+        // Calculate total hours
+        const totalHours = bankHours + ccHours + transHours + propHours + ajeHours + otherHours;
+        
+        // Update total hours display
+        document.getElementById('totalHours').textContent = totalHours.toFixed(2);
+
+        // Validate inputs
+        validateInputs();
+
+        // Calculate service prices (without QB fee)
+        const basePrice = (totalHours * hourlyRate);
+        const midPrice = roundToNearest10(basePrice * (1 + midMarkupPercent/100));
+        const highPrice = roundToNearest10(basePrice * (1 + highMarkupPercent/100));
+
+        // Add QB fee separately (not marked up)
+        const basePriceWithQB = basePrice + qbFee;
+        const midPriceWithQB = midPrice + qbFee;
+        const highPriceWithQB = highPrice + qbFee;
+
+        // Update display
+        document.getElementById('basePrice').textContent = basePriceWithQB ? `$${basePriceWithQB.toFixed(2)}` : '$0.00';
+        document.getElementById('midPrice').textContent = midPriceWithQB ? `$${midPriceWithQB.toFixed(2)}` : '$0.00';
+        document.getElementById('highPrice').textContent = highPriceWithQB ? `$${highPriceWithQB.toFixed(2)}` : '$0.00';
+
+        // Show/hide warning for high quotes
+        if (highPriceWithQB > 1500) {
+            document.getElementById('warning').style.display = 'block';
+            document.getElementById('warningText').textContent = 'Quote exceeds $1,500 - Send to accounting team';
+        }
+    }
+
+    // Add event listeners to all inputs
+    document.querySelectorAll('input, select').forEach(input => {
+        input.addEventListener('input', calculate);
+    });
+
+    // Initial calculation
+    calculate();
+</script>
