@@ -62,6 +62,17 @@
         .content {
             padding: 24px;
         }
+       
+        <div class="markup-control">
+                <div class="markup-row">
+                    <label for="midMarkup">Mid Price Markup (%)</label>
+                    <input type="number" id="midMarkup" value="30" min="0" max="100">
+                </div>
+                <div class="markup-row">
+                    <label for="highMarkup">High Price Markup (%)</label>
+                    <input type="number" id="highMarkup" value="50" min="0" max="100">
+                </div>
+            </div>
 
         .two-columns {
             display: grid;
@@ -395,17 +406,75 @@
         </div>
     </div>
 
-    <script>
+<script>
         function roundToNearest10(num) {
             return Math.round(num / 10) * 10;
         }
 
+        function validateInputs() {
+            const bankAccounts = Number(document.getElementById('bankAccounts').value) || 0;
+            const creditCards = Number(document.getElementById('creditCards').value) || 0;
+            const transactions = Number(document.getElementById('transactions').value) || 0;
+            const properties = Number(document.getElementById('properties').value) || 0;
+            const monthlyAJEs = Number(document.getElementById('monthlyAJEs').value) || 0;
+
+            const bankHours = Number(document.getElementById('bankHours').value) || 0;
+            const ccHours = Number(document.getElementById('ccHours').value) || 0;
+            const transHours = Number(document.getElementById('transHours').value) || 0;
+            const propHours = Number(document.getElementById('propHours').value) || 0;
+            const ajeHours = Number(document.getElementById('ajeHours').value) || 0;
+
+            let isValid = true;
+
+            // Validate no negative hours
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                if (Number(input.value) < 0) {
+                    input.value = 0;
+                }
+            });
+
+            // Reset all error states
+            document.querySelectorAll('input').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            // Validate required hours based on service requirements
+            if (bankAccounts > 0 && bankHours === 0) {
+                document.getElementById('bankHours').classList.add('error');
+                isValid = false;
+            }
+
+            if (creditCards > 0 && ccHours === 0) {
+                document.getElementById('ccHours').classList.add('error');
+                isValid = false;
+            }
+
+            if (transactions > 0 && transHours === 0) {
+                document.getElementById('transHours').classList.add('error');
+                isValid = false;
+            }
+
+            if (properties > 0 && propHours === 0) {
+                document.getElementById('propHours').classList.add('error');
+                isValid = false;
+            }
+
+            if (monthlyAJEs > 0 && ajeHours === 0) {
+                document.getElementById('ajeHours').classList.add('error');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
         function calculate() {
-            // Get hourly rate
+            // Get hourly rate and QB fee
             const hourlyRate = Number(document.getElementById('hourlyRate').value) || 150;
-            
-            // Get QB fee
             const qbFee = Number(document.getElementById('qbVersion').value) || 0;
+
+            // Get markup percentages
+            const midMarkupPercent = Number(document.getElementById('midMarkup').value) || 30;
+            const highMarkupPercent = Number(document.getElementById('highMarkup').value) || 50;
 
             // Get all hours
             const bankHours = Number(document.getElementById('bankHours').value) || 0;
@@ -415,6 +484,16 @@
             const ajeHours = Number(document.getElementById('ajeHours').value) || 0;
             const otherHours = Number(document.getElementById('otherHours').value) || 0;
 
+            // Validate inputs
+            const isValid = validateInputs();
+            if (!isValid) {
+                document.getElementById('warning').style.display = 'block';
+                document.getElementById('warning').innerHTML = 
+                    '<span class="warning-icon">⚠️</span> Please assign hours for all services with requirements greater than 0';
+            } else {
+                document.getElementById('warning').style.display = 'none';
+            }
+
             // Calculate total hours
             const totalHours = bankHours + ccHours + transHours + propHours + ajeHours + otherHours;
             
@@ -423,8 +502,8 @@
 
             // Calculate service prices (without QB fee)
             const basePrice = (totalHours * hourlyRate);
-            const midPrice = roundToNearest10(basePrice * 1.3);
-            const highPrice = roundToNearest10(basePrice * 1.5);
+            const midPrice = roundToNearest10(basePrice * (1 + midMarkupPercent/100));
+            const highPrice = roundToNearest10(basePrice * (1 + highMarkupPercent/100));
 
             // Add QB fee separately (not marked up)
             const basePriceWithQB = basePrice + qbFee;
@@ -436,9 +515,12 @@
             document.getElementById('midPrice').textContent = midPriceWithQB ? `$${midPriceWithQB.toFixed(2)}` : '$0.00';
             document.getElementById('highPrice').textContent = highPriceWithQB ? `$${highPriceWithQB.toFixed(2)}` : '$0.00';
 
-            // Show/hide warning
-            document.getElementById('warning').style.display = 
-                highPriceWithQB > 1500 ? 'block' : 'none';
+            // Show/hide warning for high quotes
+            if (highPriceWithQB > 1500) {
+                document.getElementById('warning').style.display = 'block';
+                document.getElementById('warning').innerHTML = 
+                    '<span class="warning-icon">⚠️</span> Quote exceeds $1,500 - Send to accounting team';
+            }
         }
 
         // Add event listeners to all inputs
@@ -449,5 +531,3 @@
         // Initial calculation
         calculate();
     </script>
-</body>
-</html>
