@@ -138,11 +138,17 @@
             margin-top: 4px;
         }
 
+        .results-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
         .results {
             background: var(--gray-800);
             color: white;
             padding: 24px;
-            margin-top: 24px;
             border-radius: 8px;
         }
 
@@ -166,10 +172,22 @@
             border-radius: 8px;
             color: var(--black);
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
         }
 
-        .result-item:hover, .result-item.selected {
+        .result-item:hover {
+            background-color: var(--light-green);
+            transform: translateY(-2px);
+        }
+
+        .result-item.selected {
+            background-color: var(--light-green);
+            border: 2px solid var(--primary-green);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-item.selected:hover {
             background-color: var(--light-green);
         }
 
@@ -196,10 +214,16 @@
             color: var(--red);
         }
 
-        .section-divider {
-            height: 1px;
-            background: rgba(255,255,255,0.1);
-            margin: 24px 0;
+        .cleanup-section {
+            background: var(--gray-800);
+            color: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-top: 24px;
+        }
+
+        .cleanup-total {
+            font-weight: 700;
         }
 
         @media (max-width: 768px) {
@@ -280,6 +304,19 @@
                 <div class="column">
                     <h2 class="column-header">Service Requirements</h2>
                     <div class="input-row">
+                        <label for="onboardingFee">Onboarding Fee ($)</label>
+                        <input type="number" id="onboardingFee" value="0" min="0">
+                    </div>
+                    <div class="input-row">
+                        <label>QuickBooks Version</label>
+                        <select id="qbVersion">
+                            <option value="">Select...</option>
+                            <option value="50">Essentials ($50)</option>
+                            <option value="70">Plus ($70)</option>
+                            <option value="140">Advanced ($140)</option>
+                        </select>
+                    </div>
+                    <div class="input-row">
                         <label>Bank Accounts</label>
                         <input type="number" id="bankAccounts" min="0">
                     </div>
@@ -299,18 +336,24 @@
                         <label>Monthly AJEs</label>
                         <input type="number" id="monthlyAJEs" min="0">
                     </div>
+                </div>
+                <div class="column">
+                    <h2 class="column-header">Service Requirements</h2>
                     <div class="input-row">
-                        <label>QuickBooks Version</label>
-                        <select id="qbVersion">
+                        <label>Has Square?</label>
+                        <select id="hasSquare">
                             <option value="">Select...</option>
-                            <option value="50">Essentials ($50)</option>
-                            <option value="70">Plus ($70)</option>
-                            <option value="140">Advanced ($140)</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
                         </select>
                     </div>
                     <div class="input-row">
-                        <label for="onboardingFee">Onboarding Fee ($)</label>
-                        <input type="number" id="onboardingFee" value="0" min="0">
+                        <label>Payroll?</label>
+                        <select id="payroll">
+                            <option value="">Select...</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
                     </div>
                 </div>
 
@@ -364,10 +407,10 @@
                         <div class="result-value" id="highPrice">$0.00</div>
                     </div>
                 </div>
+            </div>
 
-                <div class="section-divider"></div>
-
-                <h3 class="results-header">Cleanup</h3>
+            <div class="cleanup-section">
+                <h3 class="results-header">Clean Up</h3>
                 <div class="result-grid">
                     <div class="result-item">
                         <div class="input-row">
@@ -380,11 +423,11 @@
                         </div>
                     </div>
                     <div class="result-item">
-                        <div class="result-label">Selected Price</div>
+                        <div class="result-label">Clean Up No Discount</div>
                         <div class="result-value" id="selectedPrice">$0.00</div>
                     </div>
                     <div class="result-item">
-                        <div class="result-label">Cleanup Total</div>
+                        <div class="result-label cleanup-total">Clean Up Total</div>
                         <div class="result-value" id="cleanupTotal">$0.00</div>
                     </div>
                 </div>
@@ -400,6 +443,10 @@
     <script>
         function roundToNearest10(num) {
             return Math.round(num / 10) * 10;
+        }
+
+        function formatCurrency(amount) {
+            return `$${amount.toFixed(2)}`;
         }
 
         function validateInputs() {
@@ -454,55 +501,25 @@
             const highPrice = roundToNearest10(basePrice * (1 + highMarkupPercent / 100));
 
             // Update prices
-            document.getElementById('basePrice').innerText = `$${basePrice.toFixed(2)}`;
-            document.getElementById('midPrice').innerText = `$${midPrice.toFixed(2)}`;
-            document.getElementById('highPrice').innerText = `$${highPrice.toFixed(2)}`;
+            document.getElementById('basePrice').innerText = formatCurrency(basePrice);
+            document.getElementById('midPrice').innerText = formatCurrency(midPrice);
+            document.getElementById('highPrice').innerText = formatCurrency(highPrice);
 
             // Calculate cleanup total based on selected price
-            const selectedPrice = document.querySelector('.result-item.selected .result-value').innerText.replace('$', '') || basePrice;
+            const selectedPriceElement = document.querySelector('.result-item.selected .result-value');
+            const selectedPrice = selectedPriceElement ? 
+                Number(selectedPriceElement.innerText.replace('$', '')) : 
+                basePrice; // Default to base price if nothing selected
+            
             const cleanupMonths = Number(document.getElementById('cleanupMonths').value) || 0;
             const cleanupDiscount = Number(document.getElementById('cleanupDiscount').value) || 0;
-            const cleanupTotal = cleanupMonths * selectedPrice * (1 - cleanupDiscount / 100);
+            const cleanupNoDiscount = selectedPrice * cleanupMonths;
+            const cleanupTotal = cleanupNoDiscount * (1 - (cleanupDiscount / 100));
 
-            // Update cleanup total
-            document.getElementById('cleanupTotal').innerText = `$${cleanupTotal.toFixed(2)}`;
+            // Update cleanup displays
+            document.getElementById('selectedPrice').innerText = formatCurrency(cleanupNoDiscount);
+            document.getElementById('cleanupTotal').innerText = formatCurrency(cleanupTotal);
 
             // Show warning if final total exceeds $1,500
             const warning = document.getElementById('warning');
-            if (cleanupTotal > 1500) {
-                warning.style.display = 'flex';
-            } else {
-                warning.style.display = 'none';
-            }
-        }
-
-        function selectPrice(priceId) {
-            // Remove selected class from all result items
-            document.querySelectorAll('.result-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-
-            // Add selected class to clicked result item
-            document.getElementById(priceId).parentElement.classList.add('selected');
-
-            // Update selected price
-            const selectedPrice = document.getElementById(priceId).innerText;
-            document.getElementById('selectedPrice').innerText = selectedPrice;
-
-            // Recalculate cleanup total
-            calculate();
-        }
-
-        // Add event listeners to inputs
-        document.querySelectorAll('input, select').forEach(input => {
-            input.addEventListener('input', () => {
-                validateInputs();
-                calculate();
-            });
-        });
-
-        // Initial calculation
-        calculate();
-    </script>
-</body>
-</html>
+            warning.style.display = cleanupTotal >
