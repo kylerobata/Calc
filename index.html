@@ -311,23 +311,23 @@
                     <h2 class="column-header">Time Allocation (Hours)</h2>
                     <div class="input-row">
                         <label>Bank Account Hours</label>
-                        <input type="number" id="bankHours" step="0.25" min="0">
+                        <input type="number" id="bankHours" step="0.25" min="0" max="100">
                     </div>
                     <div class="input-row">
                         <label>Credit Card Hours</label>
-                        <input type="number" id="ccHours" step="0.25" min="0">
+                        <input type="number" id="ccHours" step="0.25" min="0" max="100">
                     </div>
                     <div class="input-row">
                         <label>Property Hours</label>
-                        <input type="number" id="propHours" step="0.25" min="0">
+                        <input type="number" id="propHours" step="0.25" min="0" max="100">
                     </div>
                     <div class="input-row">
                         <label>AJE Hours</label>
-                        <input type="number" id="ajeHours" step="0.25" min="0">
+                        <input type="number" id="ajeHours" step="0.25" min="0" max="100">
                     </div>
                     <div class="input-row">
                         <label>Other Hours</label>
-                        <input type="number" id="otherHours" step="0.25" min="0">
+                        <input type="number" id="otherHours" step="0.25" min="0" max="100">
                     </div>
 
                     <div class="total-hours">
@@ -442,7 +442,7 @@
             document.getElementById('highPrice').innerText = `$${highPrice.toFixed(2)}`;
 
             // Calculate cleanup total based on selected price
-            const selectedPrice = document.querySelector('.result-item.selected .result-value').innerText.replace('$', '') || basePrice;
+            const selectedPrice = Number(document.querySelector('.result-item.selected .result-value').innerText.replace('$', '')) || basePrice;
             const cleanupMonths = Number(document.getElementById('cleanupMonths').value) || 0;
             const cleanupDiscount = Number(document.getElementById('cleanupDiscount').value) || 0;
             const cleanupTotal = cleanupMonths * selectedPrice * (1 - cleanupDiscount / 100);
@@ -467,10 +467,6 @@
 
             // Add selected class to clicked result item
             document.getElementById(priceId).parentElement.classList.add('selected');
-
-            // Update selected price
-            const selectedPrice = document.getElementById(priceId).innerText;
-            document.getElementById('selectedPrice').innerText = selectedPrice;
 
             // Recalculate cleanup total
             calculate();
