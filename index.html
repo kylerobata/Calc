@@ -411,7 +411,7 @@
         }
 
         function calculate() {
-            // Get hourly rate and QB fee
+            // Get hourly rate
             const hourlyRate = Number(document.getElementById('hourlyRate').value) || 0;
             const qbFee = Number(document.getElementById('qbVersion').value) || 0;
             const onboardingFee = Number(document.getElementById('onboardingFee').value) || 0;
@@ -432,17 +432,22 @@
             document.getElementById('totalHours').innerText = totalHours.toFixed(2);
 
             // Calculate base price, mid price, and high price
-            const basePrice = roundToNearest10((hourlyRate * totalHours) + qbFee + onboardingFee);
+            const basePrice = roundToNearest10(hourlyRate * totalHours);
             const midPrice = roundToNearest10(basePrice * (1 + midMarkupPercent / 100));
             const highPrice = roundToNearest10(basePrice * (1 + highMarkupPercent / 100));
 
+            // Add QB fee and onboarding fee to the prices without markup
+            const basePriceWithFees = basePrice + qbFee + onboardingFee;
+            const midPriceWithFees = midPrice + qbFee + onboardingFee;
+            const highPriceWithFees = highPrice + qbFee + onboardingFee;
+
             // Update prices
-            document.getElementById('basePrice').innerText = `$${basePrice.toFixed(2)}`;
-            document.getElementById('midPrice').innerText = `$${midPrice.toFixed(2)}`;
-            document.getElementById('highPrice').innerText = `$${highPrice.toFixed(2)}`;
+            document.getElementById('basePrice').innerText = `$${basePriceWithFees.toFixed(2)}`;
+            document.getElementById('midPrice').innerText = `$${midPriceWithFees.toFixed(2)}`;
+            document.getElementById('highPrice').innerText = `$${highPriceWithFees.toFixed(2)}`;
 
             // Calculate cleanup total based on selected price
-            const selectedPrice = Number(document.querySelector('.result-item.selected .result-value').innerText.replace('$', '')) || basePrice;
+            const selectedPrice = Number(document.querySelector('.result-item.selected .result-value').innerText.replace('$', '')) || basePriceWithFees;
             const cleanupMonths = Number(document.getElementById('cleanupMonths').value) || 0;
             const cleanupDiscount = Number(document.getElementById('cleanupDiscount').value) || 0;
             const cleanupTotal = cleanupMonths * selectedPrice * (1 - cleanupDiscount / 100);
