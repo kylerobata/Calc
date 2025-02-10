@@ -123,21 +123,6 @@
             background-color: var(--light-red);
         }
 
-        .total-hours {
-            background: var(--light-green);
-            padding: 16px;
-            border-radius: 8px;
-            margin-top: 16px;
-            border: 1px solid var(--primary-green);
-        }
-
-        .total-hours-value {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--dark-green);
-            margin-top: 4px;
-        }
-
         .results {
             background: var(--gray-800);
             color: white;
@@ -300,10 +285,6 @@
                         <input type="number" id="creditCards" min="0">
                     </div>
                     <div class="input-row">
-                        <label>Monthly Transactions</label>
-                        <input type="number" id="transactions" min="0">
-                    </div>
-                    <div class="input-row">
                         <label>Properties</label>
                         <input type="number" id="properties" min="0">
                     </div>
@@ -335,10 +316,6 @@
                     <div class="input-row">
                         <label>Credit Card Hours</label>
                         <input type="number" id="ccHours" step="0.25" min="0">
-                    </div>
-                    <div class="input-row">
-                        <label>Transaction Hours</label>
-                        <input type="number" id="transHours" step="0.25" min="0">
                     </div>
                     <div class="input-row">
                         <label>Property Hours</label>
@@ -414,7 +391,6 @@
             const pairs = [
                 { req: 'bankAccounts', hours: 'bankHours' },
                 { req: 'creditCards', hours: 'ccHours' },
-                { req: 'transactions', hours: 'transHours' },
                 { req: 'properties', hours: 'propHours' },
                 { req: 'monthlyAJEs', hours: 'ajeHours' }
             ];
@@ -447,11 +423,10 @@
             // Get total hours
             const bankHours = Number(document.getElementById('bankHours').value) || 0;
             const ccHours = Number(document.getElementById('ccHours').value) || 0;
-            const transHours = Number(document.getElementById('transHours').value) || 0;
             const propHours = Number(document.getElementById('propHours').value) || 0;
             const ajeHours = Number(document.getElementById('ajeHours').value) || 0;
             const otherHours = Number(document.getElementById('otherHours').value) || 0;
-            const totalHours = bankHours + ccHours + transHours + propHours + ajeHours + otherHours;
+            const totalHours = bankHours + ccHours + propHours + ajeHours + otherHours;
 
             // Update total hours
             document.getElementById('totalHours').innerText = totalHours.toFixed(2);
