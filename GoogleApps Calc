@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TrueBooks Accounting Bidding Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="theme-color" content="#1F2937">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #F3F4F6;
+            color: #1A1A1A;
+            padding: 20px;
+        }
+
+        .calculator {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #10B981;
+            font-size: 22px;
+        }
+
+        label {
+            font-weight: 500;
+            display: block;
+            margin-top: 10px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .result {
+            background: #1F2937;
+            color: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .result h2 {
+            color: #10B981;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .result div {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        button {
+            background: #10B981;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #059669;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>TrueBooks Accounting Bidding Calculator</h1>
+
+        <label for="hourlyRate">Hourly Rate ($)</label>
+        <input type="number" id="hourlyRate" value="150">
+
+        <label for="midMarkup">Mid Price Markup (%)</label>
+        <input type="number" id="midMarkup" value="30" min="0" max="100">
+
+        <label for="highMarkup">High Price Markup (%)</label>
+        <input type="number" id="highMarkup" value="50" min="0" max="100">
+
+        <label for="totalHours">Total Monthly Hours</label>
+        <input type="number" id="totalHours" value="0">
+
+        <label for="qbVersion">QuickBooks Version</label>
+        <select id="qbVersion">
+            <option value="50">Essentials ($50)</option>
+            <option value="70">Plus ($70)</option>
+            <option value="140">Advanced ($140)</option>
+        </select>
+
+        <label for="onboardingFee">Onboarding Fee ($)</label>
+        <input type="number" id="onboardingFee" value="0" min="0">
+
+        <button onclick="calculate()">Calculate</button>
+
+        <div class="result">
+            <h2>Monthly Quote</h2>
+            <div id="quote">$0.00</div>
+        </div>
+    </div>
+
+    <script>
+        function roundToNearest10(num) {
+            return Math.round(num / 10) * 10;
+        }
+
+        function calculate() {
+            const hourlyRate = Number(document.getElementById('hourlyRate').value) || 0;
+            const midMarkupPercent = Number(document.getElementById('midMarkup').value) || 0;
+            const highMarkupPercent = Number(document.getElementById('highMarkup').value) || 0;
+            const totalHours = Number(document.getElementById('totalHours').value) || 0;
+            const qbFee = Number(document.getElementById('qbVersion').value) || 0;
+            const onboardingFee = Number(document.getElementById('onboardingFee').value) || 0;
+
+            const basePrice = roundToNearest10(hourlyRate * totalHours);
+            const midPrice = roundToNearest10(basePrice * (1 + midMarkupPercent / 100));
+            const highPrice = roundToNearest10(basePrice * (1 + highMarkupPercent / 100));
+
+            const finalPrice = basePrice + qbFee + onboardingFee;
+            document.getElementById('quote').innerText = `$${finalPrice.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>
